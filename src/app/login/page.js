@@ -4,12 +4,12 @@ import { Mail, Lock, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -24,16 +24,15 @@ export default function LoginPage() {
     password: ""
   });
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (status === "authenticated") {
       router.replace("/chatbot");
     }
   }, [status, router]);
 
-  // Handle registration success message
   useEffect(() => {
-    if (searchParams.get("registered")) {
+    const registered = searchParams.get("registered");
+    if (registered) {
       setSuccessMsg("Identity Initialized. Please provide Access Key.");
     }
   }, [searchParams]);
@@ -42,7 +41,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    setSuccessMsg(""); // Clear success msg on new login attempt
+    setSuccessMsg("");
 
     const result = await signIn("credentials", {
       redirect: false,
@@ -58,7 +57,6 @@ export default function LoginPage() {
     }
   };
 
-  // Prevent UI flickering while checking session
   if (status === "loading" || status === "authenticated") {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#030712]">
@@ -69,7 +67,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#030712] flex items-center justify-center px-6 overflow-hidden">
-      {/* Neural Background Gradients */}
       <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-violet-600/10 blur-[120px]" />
       <div className="absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-cyan-500/5 blur-[100px]" />
       
@@ -93,7 +90,6 @@ export default function LoginPage() {
         </div>
 
         <div className="rounded-3xl border border-white/5 bg-white/5 p-8 backdrop-blur-2xl shadow-2xl">
-          {/* Status Notifications */}
           {error && (
             <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-center text-xs font-bold text-red-400 uppercase tracking-widest">
               {error}
@@ -189,5 +185,17 @@ export default function LoginPage() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-full items-center justify-center bg-[#030712]">
+        <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
