@@ -2,8 +2,8 @@ import axios from 'axios';
 import { getSession } from 'next-auth/react';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1',
-  withCredentials: true, 
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 });
 
 api.interceptors.request.use(async (config) => {
@@ -11,8 +11,6 @@ api.interceptors.request.use(async (config) => {
   
   if (session?.accessToken) {
     config.headers.Authorization = `Bearer ${session.accessToken}`;
-  } else if (session?.user?.email) {
-    config.headers.Authorization = `Bearer ${session.user.email}`;
   }
 
   if (config.data instanceof FormData) {

@@ -24,12 +24,14 @@ export default function LoginPage() {
     password: ""
   });
 
+  // Redirect if already authenticated
   useEffect(() => {
     if (status === "authenticated") {
       router.replace("/chatbot");
     }
   }, [status, router]);
 
+  // Handle registration success message
   useEffect(() => {
     if (searchParams.get("registered")) {
       setSuccessMsg("Identity Initialized. Please provide Access Key.");
@@ -40,7 +42,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    setSuccessMsg("");
+    setSuccessMsg(""); // Clear success msg on new login attempt
 
     const result = await signIn("credentials", {
       redirect: false,
@@ -56,6 +58,7 @@ export default function LoginPage() {
     }
   };
 
+  // Prevent UI flickering while checking session
   if (status === "loading" || status === "authenticated") {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#030712]">
@@ -66,6 +69,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#030712] flex items-center justify-center px-6 overflow-hidden">
+      {/* Neural Background Gradients */}
       <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-violet-600/10 blur-[120px]" />
       <div className="absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-cyan-500/5 blur-[100px]" />
       
@@ -89,6 +93,7 @@ export default function LoginPage() {
         </div>
 
         <div className="rounded-3xl border border-white/5 bg-white/5 p-8 backdrop-blur-2xl shadow-2xl">
+          {/* Status Notifications */}
           {error && (
             <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-center text-xs font-bold text-red-400 uppercase tracking-widest">
               {error}
@@ -160,12 +165,14 @@ export default function LoginPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <button 
+              type="button"
               onClick={() => signIn("github", { callbackUrl: "/chatbot" })}
               className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-3.5 text-sm font-bold text-slate-200 transition-all hover:bg-white/10"
             >
               <FaGithub size={20} /> Github
             </button>
             <button 
+              type="button"
               onClick={() => signIn("google", { callbackUrl: "/chatbot" })}
               className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-3.5 text-sm font-bold text-slate-200 transition-all hover:bg-white/10"
             >
