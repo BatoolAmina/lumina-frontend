@@ -1,6 +1,6 @@
-# Lumina 3.0 | Neural Interface
+# Lumina 1.0 | Neural Interface
 
-Lumina 3.0 is a cutting-edge AI frontend built with **Next.js 15+** and **Tailwind CSS**. It serves as the primary gateway to the Lumina Neural Ecosystem, offering a seamless, high-performance interface for chat synthesis, architectural image generation, and deep document analysis.
+Lumina 1.0 is a cutting-edge AI frontend built with **Next.js 15+** and **Tailwind CSS**. It serves as the primary gateway to the Lumina Neural Ecosystem, offering a seamless, high-performance interface for chat synthesis, architectural image generation, and deep document analysis.
 
 ## 🌌 Core Interface Features
 
