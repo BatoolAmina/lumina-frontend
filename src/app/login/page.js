@@ -1,4 +1,5 @@
 "use client";
+
 import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
@@ -13,7 +14,7 @@ function LoginContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -69,8 +70,8 @@ function LoginContent() {
     <div className="relative min-h-screen w-full bg-[#030712] flex items-center justify-center px-6 overflow-hidden">
       <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-violet-600/10 blur-[120px]" />
       <div className="absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-cyan-500/5 blur-[100px]" />
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -95,7 +96,7 @@ function LoginContent() {
               {error}
             </div>
           )}
-          
+
           {successMsg && (
             <div className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-center text-xs font-bold text-emerald-400 uppercase tracking-widest">
               {successMsg}
@@ -107,13 +108,13 @@ function LoginContent() {
               <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Digital Identity</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                <input 
+                <input
                   required
-                  type="email" 
+                  type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  placeholder="name@domain.com" 
-                  className="w-full rounded-xl border border-white/5 bg-black/40 py-4 pl-12 pr-4 text-white outline-none transition-all focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 placeholder:text-slate-700" 
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="name@domain.com"
+                  className="w-full rounded-xl border border-white/5 bg-black/40 py-4 pl-12 pr-4 text-white outline-none transition-all focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 placeholder:text-slate-700"
                 />
               </div>
             </div>
@@ -124,13 +125,13 @@ function LoginContent() {
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                <input 
+                <input
                   required
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  placeholder="••••••••" 
-                  className="w-full rounded-xl border border-white/5 bg-black/40 py-4 pl-12 pr-12 text-white outline-none transition-all focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 placeholder:text-slate-700" 
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-white/5 bg-black/40 py-4 pl-12 pr-12 text-white outline-none transition-all focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 placeholder:text-slate-700"
                 />
                 <button
                   type="button"
@@ -142,7 +143,7 @@ function LoginContent() {
               </div>
             </div>
 
-            <button 
+            <button
               disabled={isLoading}
               type="submit"
               className="group relative mt-4 flex w-full items-center justify-center gap-3 rounded-xl bg-violet-600 py-4 font-black uppercase tracking-widest text-white transition-all hover:bg-violet-500 active:scale-95 shadow-xl shadow-violet-600/20 disabled:opacity-50"
@@ -160,14 +161,14 @@ function LoginContent() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <button 
+            <button
               type="button"
               onClick={() => signIn("github", { callbackUrl: "/chatbot" })}
               className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-3.5 text-sm font-bold text-slate-200 transition-all hover:bg-white/10"
             >
               <FaGithub size={20} /> Github
             </button>
-            <button 
+            <button
               type="button"
               onClick={() => signIn("google", { callbackUrl: "/chatbot" })}
               className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-3.5 text-sm font-bold text-slate-200 transition-all hover:bg-white/10"
