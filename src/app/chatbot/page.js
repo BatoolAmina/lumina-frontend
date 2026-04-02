@@ -7,14 +7,22 @@ import {
 } from "react-icons/tb";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import ChatPage from "@/components/layout/ChatInterface";
 
 export default function ChatbotLayout() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/login");
+    }
+  }, [status, router]);
 
   useEffect(() => {
     if (window.innerWidth > 1024) setIsSidebarOpen(true);
@@ -33,6 +41,16 @@ export default function ChatbotLayout() {
     if (session?.user) fetchHistory();
   }, [session]);
 
+  if (status === "loading") {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[#030712]">
+        <TbLoader2 className="h-8 w-8 animate-spin text-violet-500" />
+      </div>
+    );
+  }
+
+  if (!session) return null;
+
   const handleDelete = async (chatId) => {
     const confirmed = window.confirm("Delete this protocol? This cannot be undone.");
     if (!confirmed) return;
@@ -47,9 +65,7 @@ export default function ChatbotLayout() {
 
   const handleRename = async (chatId, newTitle) => {
     try {
-      // 1. Update Backend
       await api.patch(`/chat/history/${chatId}`, { title: newTitle });
-      // 2. Refresh Sidebar List immediately
       await fetchHistory();
     } catch (error) {
       console.error("Rename Sync Error:", error);
@@ -151,7 +167,6 @@ function HistoryItem({ chat, isActive, onSelect, onDelete, onRename }) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Sync internal edit value if parent state changes
   useEffect(() => {
     setEditValue(chat.title);
   }, [chat.title]);
