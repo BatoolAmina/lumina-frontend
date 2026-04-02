@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Lumina 3.0 | Neural Interface
 
-## Getting Started
+Lumina 3.0 is a cutting-edge AI frontend built with **Next.js 15+** and **Tailwind CSS**. It serves as the primary gateway to the Lumina Neural Ecosystem, offering a seamless, high-performance interface for chat synthesis, architectural image generation, and deep document analysis.
 
-First, run the development server:
+## 🌌 Core Interface Features
 
+* **Adaptive Chat Interface:** Powered by `framer-motion` for fluid, real-time message transitions.
+* **Architect Mode:** A dedicated UI toggle for high-fidelity generative imaging.
+* **Document Protocol:** Drag-and-drop support for PDF, DOCX, and TXT analysis.
+* **Neural Sidebar:** Fast switching between active "Protocols" (chat threads).
+* **Markdown Synthesis:** Full support for syntax highlighting and GitHub-flavored markdown.
+
+---
+
+## 🛠 Tech Stack
+
+* **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+* **Animations:** [Framer Motion](https://www.framer.com/motion/)
+* **Icons:** [React Icons / Tabler Icons](https://react-icons.github.io/react-icons/)
+* **Networking:** [Axios](https://axios-http.com/) with centralized API interceptors.
+
+---
+
+## ⚙️ Local Development
+
+### 1. Clone & Enter
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [https://github.com/batoolamina/lumina-frontend.git](https://github.com/your-username/lumina-frontend.git)
+cd lumina-frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Installation & Setup
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+**Install Dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install 
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Environment Setup
 
-## Learn More
+**Create Environment Variables**
+   Create a `.env.local` file in the root directory and add your backend URL:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Run the Engine
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Start the Development Server**
+   ```bash
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Access the Interface**
+Navigate to http://localhost:3000 to access the Lumina neural interface.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📂 Architecture Overview
+```text
+├── app/                # Next.js App Router (Pages & Layouts)
+├── components/         # Reusable UI components (Sidebar, Header, etc.)
+├── lib/                # API configurations and utility functions
+├── public/             # Static assets and neural branding
+└── styles/             # Global CSS and Tailwind configurations
+```
