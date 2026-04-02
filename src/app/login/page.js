@@ -5,16 +5,16 @@ import { Mail, Lock, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-function LoginContent() {
+export default function LoginPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -32,8 +32,7 @@ function LoginContent() {
   }, [status, router]);
 
   useEffect(() => {
-    const registered = searchParams.get("registered");
-    if (registered) {
+    if (searchParams.get("registered")) {
       setSuccessMsg("Identity Initialized. Please provide Access Key.");
     }
   }, [searchParams]);
@@ -44,94 +43,115 @@ function LoginContent() {
     setError("");
     setSuccessMsg("");
 
-    const result = await signIn("credentials", {
-      redirect: false,
-      email: formData.email,
-      password: formData.password,
-    });
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    if (result?.error) {
-      setError("Neural Protocol Denied: Invalid Credentials");
+      if (result?.error) {
+        setError("Neural Protocol Denied: Invalid Credentials");
+        setIsLoading(false);
+      } else {
+        router.push("/chatbot");
+      }
+    } catch (err) {
+      setError("System Overload: Connection failed");
       setIsLoading(false);
-    } else {
-      router.push("/chatbot");
     }
   };
 
-  if (status === "loading" || status === "authenticated") {
+  if (status === "loading") {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-[#030712]">
-        <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-[#030712] gap-4">
+        <Loader2 className="h-10 w-10 animate-spin text-violet-500" />
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Syncing Neural Core</p>
       </div>
     );
   }
 
   return (
     <div className="relative min-h-screen w-full bg-[#030712] flex items-center justify-center px-6 overflow-hidden">
-      <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-violet-600/10 blur-[120px]" />
-      <div className="absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-cyan-500/5 blur-[100px]" />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+      {/* Background Ambient Glows */}
+      <div className="absolute top-0 left-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-violet-600/10 blur-[120px]" />
+      <div className="absolute bottom-0 right-0 -z-10 h-[400px] w-[400px] rounded-full bg-cyan-500/5 blur-[100px]" />
+      
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-[450px]"
       >
         <div className="flex flex-col items-center mb-10">
-          <Link href="/" className="flex flex-col items-center gap-3 group">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl transition-transform group-hover:scale-110 overflow-hidden">
-              <Image src="/favicon.jpg" alt="Lumina Logo" width={80} height={80} className="w-full h-full object-cover" />
+          <Link href="/" className="flex flex-col items-center gap-4 group">
+            <div className="relative h-20 w-20 overflow-hidden rounded-2xl shadow-2xl shadow-violet-500/20 transition-transform group-hover:scale-105">
+              <Image 
+                src="/favicon.jpg" 
+                alt="Lumina Logo" 
+                fill 
+                className="object-cover"
+                priority
+              />
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <h1 className="text-3xl font-black tracking-tighter text-white uppercase">LUMINA</h1>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400">IGNITE. INTEGRATE. INNOVATE</p>
+            <div className="flex flex-col items-center">
+              <h1 className="text-4xl font-black tracking-tighter text-white uppercase">LUMINA</h1>
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-cyan-400">Secure Neural Access</p>
             </div>
           </Link>
-          <p className="mt-4 text-slate-400 text-sm font-medium">Access your digital architecture</p>
         </div>
 
-        <div className="rounded-3xl border border-white/5 bg-white/5 p-8 backdrop-blur-2xl shadow-2xl">
+        <div className="rounded-[2.5rem] border border-white/5 bg-white/5 p-8 backdrop-blur-3xl shadow-2xl">
           {error && (
-            <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-center text-xs font-bold text-red-400 uppercase tracking-widest">
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }} 
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-center text-[10px] font-black text-red-400 uppercase tracking-widest"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
-
+          
           {successMsg && (
-            <div className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-center text-xs font-bold text-emerald-400 uppercase tracking-widest">
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }} 
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-center text-[10px] font-black text-emerald-400 uppercase tracking-widest"
+            >
               {successMsg}
-            </div>
+            </motion.div>
           )}
 
           <form className="space-y-5" onSubmit={handleLogin}>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Digital Identity</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                <input
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Identity UID</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-violet-400 transition-colors" size={18} />
+                <input 
                   required
-                  type="email"
+                  type="email" 
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="name@domain.com"
-                  className="w-full rounded-xl border border-white/5 bg-black/40 py-4 pl-12 pr-4 text-white outline-none transition-all focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 placeholder:text-slate-700"
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  placeholder="USER@NEURAL.LINK" 
+                  className="w-full rounded-2xl border border-white/5 bg-black/40 py-4 pl-12 pr-4 text-sm text-white outline-none transition-all focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 placeholder:text-slate-700" 
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Access Key</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Access Key</label>
+                <Link href="/forgot-password" size={18} className="text-[9px] font-black uppercase text-slate-600 hover:text-violet-400">Recover Key</Link>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                <input
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-violet-400 transition-colors" size={18} />
+                <input 
                   required
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl border border-white/5 bg-black/40 py-4 pl-12 pr-12 text-white outline-none transition-all focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 placeholder:text-slate-700"
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  placeholder="••••••••" 
+                  className="w-full rounded-2xl border border-white/5 bg-black/40 py-4 pl-12 pr-12 text-sm text-white outline-none transition-all focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 placeholder:text-slate-700" 
                 />
                 <button
                   type="button"
@@ -143,60 +163,46 @@ function LoginContent() {
               </div>
             </div>
 
-            <button
+            <button 
               disabled={isLoading}
               type="submit"
-              className="group relative mt-4 flex w-full items-center justify-center gap-3 rounded-xl bg-violet-600 py-4 font-black uppercase tracking-widest text-white transition-all hover:bg-violet-500 active:scale-95 shadow-xl shadow-violet-600/20 disabled:opacity-50"
+              className="group relative mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-violet-600 py-4 font-black uppercase tracking-[0.2em] text-xs text-white transition-all hover:bg-violet-500 active:scale-95 shadow-xl shadow-violet-600/20 disabled:opacity-50"
             >
               {isLoading ? <Loader2 className="animate-spin" size={18} /> : "Initialize Access"}
               {!isLoading && <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />}
             </button>
           </form>
 
-          <div className="relative my-8 flex items-center justify-center">
+          <div className="relative my-10 flex items-center justify-center">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/5"></div>
             </div>
-            <span className="relative bg-[#0b101d] px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">Sync with Neural Net</span>
+            <span className="relative bg-[#030712] px-4 text-[9px] font-black uppercase tracking-[0.3em] text-slate-600">Cross-Platform Sync</span>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <button
-              type="button"
+            <button 
               onClick={() => signIn("github", { callbackUrl: "/chatbot" })}
-              className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-3.5 text-sm font-bold text-slate-200 transition-all hover:bg-white/10"
+              className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-4 text-[10px] font-black uppercase tracking-widest text-slate-300 transition-all hover:bg-white/10 hover:border-white/10 active:scale-95"
             >
-              <FaGithub size={20} /> Github
+              <FaGithub size={18} /> Github
             </button>
-            <button
-              type="button"
+            <button 
               onClick={() => signIn("google", { callbackUrl: "/chatbot" })}
-              className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-3.5 text-sm font-bold text-slate-200 transition-all hover:bg-white/10"
+              className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-white/5 py-4 text-[10px] font-black uppercase tracking-widest text-slate-300 transition-all hover:bg-white/10 hover:border-white/10 active:scale-95"
             >
-              <FcGoogle size={20} /> Google
+              <FcGoogle size={18} /> Google
             </button>
           </div>
         </div>
 
-        <p className="mt-8 text-center text-sm text-slate-500">
-          New architect?{" "}
-          <Link href="/register" className="font-bold text-cyan-400 hover:text-cyan-300 transition-colors">
+        <p className="mt-8 text-center text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          New Architect?{" "}
+          <Link href="/register" className="text-cyan-400 hover:text-cyan-300 transition-colors border-b border-cyan-400/30 pb-0.5 ml-1">
             Register Identity
           </Link>
         </p>
       </motion.div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={
-      <div className="flex h-screen w-full items-center justify-center bg-[#030712]">
-        <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
-      </div>
-    }>
-      <LoginContent />
-    </Suspense>
   );
 }

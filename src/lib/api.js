@@ -4,17 +4,24 @@ import { getSession } from 'next-auth/react';
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 api.interceptors.request.use(async (config) => {
-  const session = await getSession();
+  let session = null;
+  
+  if (typeof window !== "undefined") {
+    session = await getSession();
+  }
   
   if (session?.accessToken) {
     config.headers.Authorization = `Bearer ${session.accessToken}`;
   }
 
   if (config.data instanceof FormData) {
-    config.headers['Content-Type'] = 'multipart/form-data';
+    delete config.headers['Content-Type'];
   }
 
   return config;
@@ -25,11 +32,17 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const errorMessage = error.response?.data?.message || error.message || "Unknown Neural Link Error";
+    const backendMessage = error.response?.data?.error || error.response?.data?.message;
+    const errorMessage = backendMessage || error.message || "Unknown Neural Link Error";
+    
     console.error("Neural Link Error:", errorMessage);
     
     error.friendlyMessage = errorMessage;
     
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      console.warn("Session expired or unauthorized. Neural link severed.");
+    }
+
     return Promise.reject(error); 
   }
 );

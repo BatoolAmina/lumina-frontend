@@ -19,15 +19,20 @@ const handler = NextAuth({
             password: credentials.password,
           });
 
-          const user = res.data.data.user;
-          const token = res.data.token;
+          const user = res.data.data?.user || res.data.user;
+          const token = res.data.token || res.data.data?.token;
 
-          if (user) {
-            return { ...user, accessToken: token };
+          if (user && token) {
+            return { 
+              ...user, 
+              id: user._id || user.id, 
+              accessToken: token 
+            };
           }
           return null;
         } catch (error) {
-          throw new Error(error.response?.data?.message || "Invalid credentials");
+          const message = error.response?.data?.error || error.response?.data?.message || "Neural Protocol Denied";
+          throw new Error(message);
         }
       }
     }),
@@ -41,26 +46,36 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.accessToken = user.accessToken;
-        token.id = user._id || user.id;
+        token.id = user.id;
       }
+      
+      if (account && (account.provider === "google" || account.provider === "github")) {
+        token.accessToken = account.access_token;
+      }
+      
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
-      session.user.id = token.id;
+      if (token) {
+        session.accessToken = token.accessToken;
+        session.user.id = token.id;
+      }
       return session;
     },
   },
   pages: {
     signIn: '/login',
+    error: '/login',
   },
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
 });
 
 export { handler as GET, handler as POST };

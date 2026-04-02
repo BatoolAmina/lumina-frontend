@@ -1,13 +1,22 @@
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import BackToTop from "@/components/common/BackToTop";
 import Providers from "./providers";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
 export const metadata = {
   title: "LUMINA | Neural Architecture",
   description: "High-performance AI ecosystem engineered by Batool Amina.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  openGraph: {
+    title: "LUMINA | Neural Architecture",
+    description: "High-performance AI ecosystem engineered by Batool Amina.",
+    type: "website",
+  },
+};
+
+export const viewport = {
+  themeColor: "#030712",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
@@ -15,9 +24,9 @@ export default function RootLayout({ children }) {
     <html 
       lang="en" 
       className="scroll-smooth" 
-      data-scroll-behavior="smooth"
+      suppressHydrationWarning
     >
-      <body className="flex min-h-screen flex-col antialiased bg-[#030712] text-slate-200 selection:bg-violet-500/30 selection:text-violet-200">
+      <body className="min-h-screen bg-[#030712] font-sans antialiased text-slate-200 selection:bg-violet-500/30 selection:text-violet-200">
         <Providers>
           <LayoutWrapper>
             {children}
