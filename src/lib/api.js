@@ -10,14 +10,11 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  let session = null;
-  
   if (typeof window !== "undefined") {
-    session = await getSession();
-  }
-  
-  if (session?.accessToken) {
-    config.headers.Authorization = `Bearer ${session.accessToken}`;
+    const session = await getSession();
+    if (session?.accessToken) {
+      config.headers.Authorization = `Bearer ${session.accessToken}`;
+    }
   }
 
   if (config.data instanceof FormData) {
@@ -25,22 +22,22 @@ api.interceptors.request.use(async (config) => {
   }
 
   return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+}, (error) => Promise.reject(error));
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const backendMessage = error.response?.data?.error || error.response?.data?.message;
+    const data = error.response?.data;
+    
+    const backendMessage = data?.message || data?.error || (data?.errors ? Object.values(data.errors)[0] : null);
     const errorMessage = backendMessage || error.message || "Unknown Neural Link Error";
     
-    console.error("Neural Link Error:", errorMessage);
+    console.error("Neural Link Detailed Error:", data || error.message);
     
     error.friendlyMessage = errorMessage;
     
     if (error.response?.status === 401 && typeof window !== "undefined") {
-      console.warn("Session expired or unauthorized. Neural link severed.");
+      console.warn("Session expired. Neural link severed.");
     }
 
     return Promise.reject(error); 
