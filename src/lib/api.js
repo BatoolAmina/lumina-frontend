@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { getSession } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api/v1',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -12,6 +12,7 @@ const api = axios.create({
 api.interceptors.request.use(async (config) => {
   if (typeof window !== "undefined") {
     const session = await getSession();
+    
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
     }
@@ -26,18 +27,27 @@ api.interceptors.request.use(async (config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const data = error.response?.data;
+  async (error) => {
+    const { response } = error;
+    const data = response?.data;
     
-    const backendMessage = data?.message || data?.error || (data?.errors ? Object.values(data.errors)[0] : null);
+    const backendMessage = 
+      data?.message || 
+      data?.error || 
+      (data?.errors ? Object.values(data.errors)[0] : null);
+
     const errorMessage = backendMessage || error.message || "Unknown Neural Link Error";
     
-    console.error("Neural Link Detailed Error:", data || error.message);
-    
+    console.error("Lumina Protocol Error:", {
+      status: response?.status,
+      message: errorMessage,
+      details: data
+    });
+
     error.friendlyMessage = errorMessage;
-    
-    if (error.response?.status === 401 && typeof window !== "undefined") {
-      console.warn("Session expired. Neural link severed.");
+
+    if (response?.status === 401 && typeof window !== "undefined") {
+      console.warn("Neural link severed: Unauthorized. Initializing Re-authentication.");
     }
 
     return Promise.reject(error); 

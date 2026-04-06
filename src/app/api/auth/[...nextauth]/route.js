@@ -31,7 +31,7 @@ const handler = NextAuth({
           }
           return null;
         } catch (error) {
-          const message = error.response?.data?.error || error.response?.data?.message || "Neural Protocol Denied";
+          const message = error.response?.data?.message || error.response?.data?.error || "Neural Protocol Denied";
           throw new Error(message);
         }
       }
@@ -46,22 +46,48 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account.provider === "google" || account.provider === "github") {
+        try {
+          const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/external-login`, {
+            email: user.email,
+            name: user.name,
+            avatar: user.image,
+            providerId: user.id
+          });
+
+          user.accessToken = res.data.token;
+          user.id = res.data.data?.user?._id || res.data.data?.user?.id;
+          user.role = res.data.data?.user?.role;
+          return true;
+        } catch (error) {
+          console.error("External Sync Failed:", error.response?.data);
+          return false;
+        }
+      }
+      return true;
+    },
+
     async jwt({ token, user, account }) {
       if (user) {
         token.accessToken = user.accessToken;
         token.id = user.id;
+        token.role = user.role;
       }
       
-      if (account && (account.provider === "google" || account.provider === "github")) {
-        token.accessToken = account.access_token;
+      if (account) {
+        token.provider = account.provider;
       }
       
       return token;
     },
+
     async session({ session, token }) {
       if (token) {
         session.accessToken = token.accessToken;
         session.user.id = token.id;
+        session.user.role = token.role;
+        session.provider = token.provider;
       }
       return session;
     },
@@ -76,6 +102,17 @@ const handler = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
 });
 
 export { handler as GET, handler as POST };
