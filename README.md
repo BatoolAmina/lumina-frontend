@@ -2,7 +2,7 @@
 
 Lumina 1.0 is a cutting-edge AI frontend built with **Next.js 15+** and **Tailwind CSS**. It serves as the primary gateway to the Lumina Neural Ecosystem, offering a seamless, high-performance interface for chat synthesis, architectural image generation, and deep document analysis.
 
-## 🌌 Core Interface Features
+## Core Interface Features
 
 * **Adaptive Chat Interface:** Powered by `framer-motion` for fluid, real-time message transitions.
 * **Architect Mode:** A dedicated UI toggle for high-fidelity generative imaging.
@@ -12,7 +12,7 @@ Lumina 1.0 is a cutting-edge AI frontend built with **Next.js 15+** and **Tailwi
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
 * **Styling:** [Tailwind CSS](https://tailwindcss.com/)
@@ -22,7 +22,7 @@ Lumina 1.0 is a cutting-edge AI frontend built with **Next.js 15+** and **Tailwi
 
 ---
 
-## ⚙️ Local Development
+## Local Development
 
 ### 1. Clone & Enter
 ```bash
@@ -57,7 +57,7 @@ cd lumina-frontend
 **Access the Interface**
 Navigate to http://localhost:3000 to access the Lumina neural interface.
 
-## 📂 Architecture Overview
+## Architecture Overview
 ```text
 ├── app/                # Next.js App Router (Pages & Layouts)
 ├── components/         # Reusable UI components (Sidebar, Header, etc.)
